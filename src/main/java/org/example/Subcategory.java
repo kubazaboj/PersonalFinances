@@ -6,6 +6,7 @@ public class Subcategory {
     private String name;
     private Category category;
     private List<Expense> expenses;
+    private List<Income> incomes;
     private List<Subcategory> subcategories;
 
     public Subcategory(String name, Category category) {
@@ -33,6 +34,14 @@ public class Subcategory {
 
     public void removeExpense(Expense expense) {
         expenses.remove(expense);
+    }
+
+    public void addIncome(Income income) {
+        incomes.add(income);
+    }
+
+    public void removeIncome(Income income) {
+        incomes.remove(income);
     }
 
     public List<Subcategory> getSubcategories() {

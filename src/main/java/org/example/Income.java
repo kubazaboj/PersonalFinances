@@ -2,19 +2,13 @@ package org.example;
 
 import java.time.LocalDate;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Expense {
+public class Income {
     private String description;
     private double amount;
     private LocalDate date;
     private Subcategory subcategory;
 
-    private boolean isPositive; //True if expense,
-
-    public Expense(String description, double amount, LocalDate date) {
+    public Income(String description, double amount, LocalDate date) {
         this.description = description;
         this.amount = amount;
         this.date = date;
@@ -40,7 +34,7 @@ public class Expense {
         this.subcategory = subcategory;
     }
 
-    public void removeSubcategory(){
+    public void removeSubcategory() {
         this.subcategory = null;
     }
 
@@ -48,11 +42,11 @@ public class Expense {
     public String toString() {
         String subcategoryString = (subcategory != null) ? subcategory.getName() : "N/A";
 
-        return "Expense{" +
-                "description ='" + description + '\'' +
-                ", amount =" + amount +
-                ", date =" + date +
-                ", subcategory ='" + subcategoryString + '\'' +
+        return "Income{" +
+                "description='" + description + '\'' +
+                ", amount=" + amount +
+                ", date=" + date +
+                ", subcategory='" + subcategoryString + '\'' +
                 '}';
     }
 }

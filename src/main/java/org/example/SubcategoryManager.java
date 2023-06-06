@@ -49,4 +49,18 @@ public class SubcategoryManager {
         }
     }
 
+    public List<Expense> getAllSubcategoryIncomes(Subcategory subcategory) {
+        List<Expense> allExpenses = new ArrayList<>();
+        collectExpenses(subcategory, allExpenses);
+        return allExpenses;
+    }
+
+    private void collectIncomes(Subcategory subcategory, List<Expense> allExpenses) {
+        allExpenses.addAll(subcategory.getExpenses());
+
+        for (Subcategory sub : subcategory.getSubcategories()) {
+            collectExpenses(sub, allExpenses);
+        }
+    }
+
 }
