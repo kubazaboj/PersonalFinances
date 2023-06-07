@@ -69,6 +69,10 @@ public class Budget {
         }
     }
 
+    public boolean isBudgetOverdrafted() {
+        return actualBudget > allocatedBudget;
+    }
+
     @Override
     public String toString() {
         return "Budget{" +

@@ -23,6 +23,10 @@ public class BudgetManager {
         return budgets;
     }
 
+    public double getRemainingBudget(Budget budget) {
+        return budget.getAllocatedBudget() - budget.getActualBudget();
+    }
+
     public Budget getBudgetByYearMonth(YearMonth yearMonth) {
         for (Budget budget : budgets) {
             if (budget.getYearMonth().equals(yearMonth)) {
@@ -30,5 +34,23 @@ public class BudgetManager {
             }
         }
         return null;
+    }
+
+    public boolean isBudgetOverdraftedForMonth(YearMonth yearMonth) {
+        Budget budget = getBudgetByYearMonth(yearMonth);
+        if (budget != null) {
+            return budget.getActualBudget() > budget.getAllocatedBudget();
+        }
+        return false;
+    }
+
+    public List<YearMonth> getOverdraftedMonthsForYear(int year) {
+        List<YearMonth> overdraftedMonths = new ArrayList<>();
+        for (Budget budget : budgets) {
+            if (budget.getYearMonth().getYear() == year && budget.getActualBudget() > budget.getAllocatedBudget()) {
+                overdraftedMonths.add(budget.getYearMonth());
+            }
+        }
+        return overdraftedMonths;
     }
 }

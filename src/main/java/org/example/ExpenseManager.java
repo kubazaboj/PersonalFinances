@@ -21,16 +21,24 @@ public class ExpenseManager {
 
     public void addExpense(Expense expense) {
         expenses.add(expense);
-        budget.increaseActualBudget(expense.getAmount());
+        budget.decreaseActualBudget(expense.getAmount());
     }
 
     public void removeExpense(Expense expense) {
         expenses.remove(expense);
-        budget.decreaseActualBudget(expense.getAmount());
+        budget.increaseActualBudget(expense.getAmount());
     }
 
     public List<Expense> getAllExpenses() {
         return expenses;
+    }
+
+    public double getTotalExpenses() {
+        double total = 0;
+        for (Expense expense : expenses) {
+            total += expense.getAmount();
+        }
+        return total;
     }
 
     public double getTotalExpensesForDay(LocalDate date) {

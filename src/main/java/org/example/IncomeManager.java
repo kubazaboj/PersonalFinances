@@ -32,6 +32,14 @@ public class IncomeManager {
         return incomes;
     }
 
+    public double getTotalIncome() {
+        double total = 0;
+        for (Income income : incomes) {
+            total += income.getAmount();
+        }
+        return total;
+    }
+
     public double getTotalIncomeForDay(LocalDate date) {
         double totalIncome = 0;
         for (Income income : incomes) {
