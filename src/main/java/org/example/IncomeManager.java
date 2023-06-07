@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,5 +30,48 @@ public class IncomeManager {
 
     public List<Income> getAllIncomes() {
         return incomes;
+    }
+
+    public double getTotalIncomeForDay(LocalDate date) {
+        double totalIncome = 0;
+        for (Income income : incomes) {
+            if (income.getDate().equals(date)) {
+                totalIncome += income.getAmount();
+            }
+        }
+        return totalIncome;
+    }
+
+    public double getTotalIncomeForWeek(LocalDate startOfWeek, LocalDate endOfWeek) {
+        double totalIncome = 0;
+        for (Income income : incomes) {
+            LocalDate incomeDate = income.getDate();
+            if (incomeDate.isAfter(startOfWeek) || incomeDate.isEqual(startOfWeek)) {
+                if (incomeDate.isBefore(endOfWeek) || incomeDate.isEqual(endOfWeek)) {
+                    totalIncome += income.getAmount();
+                }
+            }
+        }
+        return totalIncome;
+    }
+
+    public double getTotalIncomeForMonth(LocalDate month) {
+        double totalIncome = 0;
+        for (Income income : incomes) {
+            if (income.getDate().getMonth().equals(month.getMonth())) {
+                totalIncome += income.getAmount();
+            }
+        }
+        return totalIncome;
+    }
+
+    public double getTotalIncomeForYear(int year) {
+        double totalIncome = 0;
+        for (Income income : incomes) {
+            if (income.getDate().getYear() == year) {
+                totalIncome += income.getAmount();
+            }
+        }
+        return totalIncome;
     }
 }

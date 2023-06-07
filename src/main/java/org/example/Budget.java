@@ -2,6 +2,7 @@ package org.example;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 
 public class Budget {
     private double actualBudget;
@@ -48,6 +49,24 @@ public class Budget {
 
     public void setYearMonth(YearMonth yearMonth) {
         this.yearMonth = yearMonth;
+    }
+
+    public long getDaysLeftInBudget() {
+        YearMonth currentYearMonth = YearMonth.now();
+        if (currentYearMonth.isAfter(yearMonth)) {
+            System.out.println("This budget's deadline has already passed.");
+            return 0;
+        } else {
+            return ChronoUnit.DAYS.between(LocalDate.now(), yearMonth.atEndOfMonth());
+        }
+    }
+
+    public double getSpendingPercentage() {
+        if (allocatedBudget == 0) {
+            return 0;
+        } else {
+            return (actualBudget / allocatedBudget) * 100;
+        }
     }
 
     @Override
