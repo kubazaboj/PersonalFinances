@@ -49,7 +49,7 @@ public class Investment {
         this.quantity += quantity;
     }
 
-    public double calcAveragePurchasePrice(){
+    public double AveragePurchasePrice(){
         return (purchasePrices.stream().mapToDouble(Double::doubleValue).sum()) / quantity;
     }
 
@@ -100,4 +100,10 @@ public class Investment {
         }
         return maxPriceIndex;
     }
+
+    public double getInvestmentLossGain(double actualPrice){
+        double investmentPriceDelta = actualPrice - AveragePurchasePrice();
+        return quantity * investmentPriceDelta;
+    }
+
 }
