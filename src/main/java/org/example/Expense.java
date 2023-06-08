@@ -12,13 +12,12 @@ public class Expense {
     private LocalDate date;
     private Subcategory subcategory;
 
-    private boolean isPositive; //True if expense,
-
-    public Expense(String description, double amount, LocalDate date) {
+    public Expense(String description, double amount, LocalDate date, Subcategory subcategory) {
         this.description = description;
         this.amount = amount;
         this.date = date;
-    }
+        this.subcategory = subcategory;
+        }
 
     public String getDescription() {
         return description;
@@ -34,10 +33,6 @@ public class Expense {
 
     public Subcategory getSubcategory() {
         return subcategory;
-    }
-
-    public void setSubcategory(Subcategory subcategory) {
-        this.subcategory = subcategory;
     }
 
     public void removeSubcategory(){

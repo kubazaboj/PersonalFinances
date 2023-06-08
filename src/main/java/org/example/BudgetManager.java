@@ -24,7 +24,7 @@ public class BudgetManager {
     }
 
     public double getRemainingBudget(Budget budget) {
-        return budget.getAllocatedBudget() - budget.getActualBudget();
+        return budget.getAllocatedBudget() - budget.getUsedBudget();
     }
 
     public Budget getBudgetByYearMonth(YearMonth yearMonth) {
@@ -39,7 +39,7 @@ public class BudgetManager {
     public boolean isBudgetOverdraftedForMonth(YearMonth yearMonth) {
         Budget budget = getBudgetByYearMonth(yearMonth);
         if (budget != null) {
-            return budget.getActualBudget() > budget.getAllocatedBudget();
+            return budget.getUsedBudget() > budget.getAllocatedBudget();
         }
         return false;
     }
@@ -47,7 +47,7 @@ public class BudgetManager {
     public List<YearMonth> getOverdraftedMonthsForYear(int year) {
         List<YearMonth> overdraftedMonths = new ArrayList<>();
         for (Budget budget : budgets) {
-            if (budget.getYearMonth().getYear() == year && budget.getActualBudget() > budget.getAllocatedBudget()) {
+            if (budget.getYearMonth().getYear() == year && budget.getUsedBudget() > budget.getAllocatedBudget()) {
                 overdraftedMonths.add(budget.getYearMonth());
             }
         }

@@ -7,14 +7,14 @@ import java.io.IOException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class userLogin {
+public class UserLogin {
 
     private final String filepath;
     private final String username;
 
     private final String password;
 
-    public userLogin(String filepath, String username, String password) {
+    public UserLogin(String filepath, String username, String password) {
         this.filepath = filepath;
         this.username = username;
         this.password = password;
@@ -46,7 +46,7 @@ public class userLogin {
             registerUser(typedUsername, typedPassword); //Username did not exist, register new user
             return false;
     }
-    private String[] getCredentials(String username){
+    String[] getCredentials(String username){
         try (BufferedReader reader = new BufferedReader(new FileReader(this.filepath))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -62,7 +62,7 @@ public class userLogin {
         return null; // Username not found or error occurred, returning null
     }
 
-    private void registerUser(String username, String password) {
+    void registerUser(String username, String password) {
         MyUtils.createFileIfNotExists(this.filepath);
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         try (FileWriter writer = new FileWriter(this.filepath)) {

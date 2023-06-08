@@ -13,19 +13,20 @@ public class IncomeManager {
         this.budget = budget;
     }
 
-    public void addIncomeToSubcategory(Income income, Subcategory subcategory) {
+    public void addIncomeToSubcategory(Income income) {
+        Subcategory subcategory = income.getSubcategory();
         subcategory.addIncome(income);
-        income.setSubcategory(subcategory);
     }
 
     public void addIncome(Income income) {
         incomes.add(income);
-        budget.increaseActualBudget(income.getAmount());
+        addIncomeToSubcategory(income);
+        budget.increaseAllocatedBudget(income.getAmount());
     }
 
     public void removeIncome(Income income) {
         incomes.remove(income);
-        budget.decreaseActualBudget(income.getAmount());
+        budget.decreaseAllocatedBudget(income.getAmount());
     }
 
     public List<Income> getAllIncomes() {

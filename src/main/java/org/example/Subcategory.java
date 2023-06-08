@@ -7,13 +7,12 @@ public class Subcategory {
     private Category category;
     private List<Expense> expenses;
     private List<Income> incomes;
-    private List<Subcategory> subcategories;
 
     public Subcategory(String name, Category category) {
         this.name = name;
         this.category = category;
         this.expenses = new ArrayList<>();
-        this.subcategories = new ArrayList<>();
+        this.incomes = new ArrayList<>();
     }
 
     public String getName() {
@@ -22,6 +21,10 @@ public class Subcategory {
 
     public Category getCategory() {
         return category;
+    }
+
+    public void removeCategory(){
+        this.category = null;
     }
 
     public List<Expense> getExpenses() {
@@ -42,18 +45,6 @@ public class Subcategory {
 
     public void removeIncome(Income income) {
         incomes.remove(income);
-    }
-
-    public List<Subcategory> getSubcategories() {
-        return subcategories;
-    }
-
-    public void addSubcategory(Subcategory subcategory) {
-        subcategories.add(subcategory);
-    }
-
-    public void removeSubcategory(Subcategory subcategory) {
-        subcategories.remove(subcategory);
     }
 
     @Override

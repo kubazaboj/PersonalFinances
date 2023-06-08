@@ -14,19 +14,20 @@ public class ExpenseManager {
         this.budget = budget;
     }
 
-    public void addExpenseToSubcategory(Expense expense, Subcategory subcategory) {
+    public void addExpenseToSubcategory(Expense expense) {
+        Subcategory subcategory = expense.getSubcategory();
         subcategory.addExpense(expense);
-        expense.setSubcategory(subcategory);
     }
 
     public void addExpense(Expense expense) {
         expenses.add(expense);
-        budget.decreaseActualBudget(expense.getAmount());
+        addExpenseToSubcategory(expense);
+        budget.increaseUsedBudget(expense.getAmount());
     }
 
     public void removeExpense(Expense expense) {
         expenses.remove(expense);
-        budget.increaseActualBudget(expense.getAmount());
+        budget.decreaseUsedBudget(expense.getAmount());
     }
 
     public List<Expense> getAllExpenses() {

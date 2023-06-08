@@ -8,10 +8,11 @@ public class Income {
     private LocalDate date;
     private Subcategory subcategory;
 
-    public Income(String description, double amount, LocalDate date) {
+    public Income(String description, double amount, LocalDate date, Subcategory subcategory) {
         this.description = description;
         this.amount = amount;
         this.date = date;
+        this.subcategory = subcategory;
     }
 
     public String getDescription() {
@@ -28,10 +29,6 @@ public class Income {
 
     public Subcategory getSubcategory() {
         return subcategory;
-    }
-
-    public void setSubcategory(Subcategory subcategory) {
-        this.subcategory = subcategory;
     }
 
     public void removeSubcategory() {
