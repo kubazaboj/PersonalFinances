@@ -1,13 +1,14 @@
 package org.example;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GoalManager {
     private List<Goal> goals;
 
-    public GoalManager(List<Goal> goals) {
-        this.goals = goals;
+    public GoalManager() {
+        this.goals = new ArrayList<Goal>();
     }
 
     public void addGoal(Goal goal) {
@@ -21,20 +22,21 @@ public class GoalManager {
     public List<Goal> getAllGoals() {
         return goals;
     }
-
-    public double getTotalExpensesForGoal(Goal goal, List<Expense> expenses) {
+    public double getTotalExpensesForGoal(Goal goal, ExpenseManager expenseManager) {
         double totalExpenses = 0.0;
-        Category category = goal.getGoalCategory();
-        Subcategory subcategory = goal.getGoalSubcategory();
+        List<Expense> expenses = expenseManager.getAllExpenses();
 
-        // Iterate over the expenses and filter based on category/subcategory and time range
+        Category goalCategory = goal.getGoalCategory();
+        Subcategory goalSubcategory = goal.getGoalSubcategory();
+        LocalDate goalStartDate = goal.getTimeFrameStart();
+        LocalDate goalEndDate = goal.getTimeFrameEnd();
+
         for (Expense expense : expenses) {
-            // Check if the expense matches the category or subcategory
             Subcategory expenseSubcategory = expense.getSubcategory();
-            if (expenseSubcategory.getCategory().equals(category) || expenseSubcategory.equals(subcategory)) {
-                // Check if the expense date is within the specified time range
+            if ((goalCategory != null && expenseSubcategory != null && expenseSubcategory.getCategory().equals(goalCategory)) ||
+                    (goalSubcategory != null && expenseSubcategory != null && expenseSubcategory.equals(goalSubcategory))) {
                 LocalDate expenseDate = expense.getDate();
-                if (isDateInRange(expenseDate, goal.getTimeFrameStart(), goal.getTimeFrameEnd())) {
+                if (isDateInRange(expenseDate, goalStartDate, goalEndDate)) {
                     totalExpenses += expense.getAmount();
                 }
             }
@@ -46,4 +48,5 @@ public class GoalManager {
     private boolean isDateInRange(LocalDate date, LocalDate rangeStart, LocalDate rangeEnd) {
         return !date.isBefore(rangeStart) && !date.isAfter(rangeEnd);
     }
+
 }
