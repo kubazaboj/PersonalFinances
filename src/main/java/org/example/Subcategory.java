@@ -23,12 +23,18 @@ public class Subcategory {
         return category;
     }
 
+    public void setCategory(Category category){this.category = category;}
+
     public void removeCategory(){
         this.category = null;
     }
 
     public List<Expense> getExpenses() {
         return expenses;
+    }
+
+    public List<Income> getIncomes() {
+        return incomes;
     }
 
     public void addExpense(Expense expense) {

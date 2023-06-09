@@ -19,7 +19,7 @@ class ExpenseTest {
     void beforeEach(){
         subcategory = Mockito.mock(Subcategory.class);
         expense = new Expense("Test Expense", 100.0, LocalDate.now(), subcategory);
-        }
+    }
 
     @Test
     void testGetDescription() {
