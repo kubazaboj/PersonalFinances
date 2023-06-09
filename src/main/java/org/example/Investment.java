@@ -11,14 +11,11 @@ public class Investment {
     private List<LocalDate> purchaseDates;
     private double gain;
 
-    public Investment(String name, double initialSharesBought, double initialPurchasePrice, LocalDate initialPurchaseDate) {
+    public Investment(String name) {
         this.name = name;
         this.purchasePrices = new ArrayList<>();
         this.purchaseDates = new ArrayList<>();
         this.purchaseShares = new ArrayList<>();
-        this.purchasePrices.add(initialPurchasePrice);
-        this.purchaseDates.add(initialPurchaseDate);
-        this.purchaseShares.add(initialSharesBought);
         this.gain = 0.0;
     }
 
@@ -47,6 +44,8 @@ public class Investment {
         return purchaseDates;
     }
 
+    public double getGain(){return gain;}
+
     public void addPurchase(double price, LocalDate date, double quantity) {
         if (price < 0 || quantity <= 0){
             throw new IllegalArgumentException("Enter valid values");
@@ -62,10 +61,10 @@ public class Investment {
         } else if (price < 0 || quantity <= 0) {
             throw new IllegalArgumentException("Enter valid values");
         }
+        gain += ((price * quantity) - (quantity * AveragePurchasePrice()));
         purchasePrices.add(-1 * price);
         purchaseDates.add(date);
         purchaseShares.add(-1 * quantity);
-        gain += (price * quantity) - (quantity * AveragePurchasePrice());
     }
 
     public int getNumberofBuys(){
@@ -94,11 +93,10 @@ public class Investment {
             return sumAllPrices;
         }
         for (int i = 0; i < purchasePrices.size(); i++) {
-            if (purchasePrices.get(i) < 0 || purchaseShares.get(i) < 0){
-                sumAllPrices -= purchasePrices.get(i) * purchaseShares.get(i);
-
-            }else {
+            if (purchasePrices.get(i) >= 0 && purchaseShares.get(i) > 0) {
                 sumAllPrices += purchasePrices.get(i) * purchaseShares.get(i);
+            }else{
+                sumAllPrices -= purchasePrices.get(i) * purchaseShares.get(i);
             }
         }
         return sumAllPrices / getTotalNumberOfShares();

@@ -17,7 +17,8 @@ public class InvestmentTest {
     double initialSharesBought = 100;
     @BeforeEach
     public void beforeEach(){
-        investment = new Investment("Test Investment", initialSharesBought, initialPurchasePrice, LocalDate.now());
+        investment = new Investment("Test Investment");
+        investment.addPurchase(initialSharesBought, LocalDate.now(), initialPurchasePrice);
     }
 
     @Test
@@ -222,7 +223,7 @@ public class InvestmentTest {
         investment.addPurchase(purchasePrices[3], LocalDate.now().plusDays(4), 20);
         investment.addPurchase(purchasePrices[4], LocalDate.now().plusDays(5), 10);
 
-        double weightedAverage = calculateWeightedAverage(purchasePrices,
+        double weightedAverage = MyUtils.calculateWeightedAverage(purchasePrices,
                 new double[]{100, 50, 30, 20, 10, initialSharesBought});
 
         assertEquals(310, investment.getTotalNumberOfShares());
@@ -232,7 +233,7 @@ public class InvestmentTest {
     }
 
 
-    private double calculateWeightedAverage(double[] values, double[] weights) {
+    /*private double calculateWeightedAverage(double[] values, double[] weights) {
         if (values.length != weights.length) {
             throw new IllegalArgumentException("Values and weights arrays must have the same length.");
         }
@@ -250,5 +251,5 @@ public class InvestmentTest {
         }
 
         return sum / totalWeight;
-    }
+    }*/
 }
