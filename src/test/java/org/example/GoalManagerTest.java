@@ -2,6 +2,8 @@ package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -26,6 +28,7 @@ public class GoalManagerTest {
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
         goalManager = new GoalManager();
+        expenseManager = new ExpenseManager(new Budget(YearMonth.now()));
     }
 
     @Test
@@ -83,10 +86,12 @@ public class GoalManagerTest {
         expenses.add(expense1);
         expenses.add(expense2);
 
-        when(expenseManager.getAllExpenses()).thenReturn(expenses);
+        ExpenseManager mockExpenseManager = Mockito.mock(ExpenseManager.class);
 
-        double totalExpensesForCategoryGoal = goalManager.getTotalExpensesForGoal(goalWithCategory, expenseManager);
-        double totalExpensesForSubcategoryGoal = goalManager.getTotalExpensesForGoal(goalWithSubcategory, expenseManager);
+        when(mockExpenseManager.getAllExpenses()).thenReturn(expenses);
+
+        double totalExpensesForCategoryGoal = goalManager.getTotalExpensesForGoal(goalWithCategory, mockExpenseManager);
+        double totalExpensesForSubcategoryGoal = goalManager.getTotalExpensesForGoal(goalWithSubcategory, mockExpenseManager);
 
         assertEquals(2 * expenseAmount, totalExpensesForCategoryGoal, 0.01);
         assertEquals(expenseAmount, totalExpensesForSubcategoryGoal, 0.01);
@@ -107,7 +112,7 @@ public class GoalManagerTest {
                 .targetMonth(YearMonth.of(2023,6))
                 .subcategory(subcategory)
                 .build();
-        ExpenseManager expenseManager = new ExpenseManager(new Budget(YearMonth.now()));
+
         expenseManager.addExpense(new Expense("Kaufland", 200, LocalDate.now(), subcategory));
         assertTrue(goalManager.wasGoalMet(categoryGoal, expenseManager));
         assertTrue(goalManager.wasGoalMet(subcategoryGoal, expenseManager));
@@ -152,4 +157,27 @@ public class GoalManagerTest {
         assertFalse(goalManager.wasGoalMet(categoryGoal, expenseManager));
         assertFalse(goalManager.wasGoalMet(subcategoryGoal, expenseManager));
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1000.0, 500.0, 500.0", // Positive value
+            "1000.0, 1500.0, -500.0", // Negative value
+            "1000.0, 1000.0, 0.0" // Zero value
+    })
+    public void testGoalSavingsAmount(double targetAmount, double totalExpenses, double expectedSavings) {
+        Category holidayCategory = new Category("Holidays");
+        Goal savingsGoal = new Goal.Builder("Vacation saving", targetAmount, GoalType.MONTHLY)
+                .targetMonth(YearMonth.now())
+                .category(holidayCategory)
+                .build();
+
+       Expense vacationExpense = new Expense("Vacation", totalExpenses, LocalDate.now(), new Subcategory("Holidays", holidayCategory));
+        expenseManager.addExpense(vacationExpense);
+        // Calculate the savings amount
+        double savingsAmount = goalManager.goalMoneySavedAmount(savingsGoal, expenseManager);
+
+        // Assert the expected savings amount
+        assertEquals(expectedSavings, savingsAmount);
+    }
+
 }
