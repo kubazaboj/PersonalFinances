@@ -9,6 +9,7 @@ public class Investment {
     private  List<Double> purchasePrices;
     private List<Double> purchaseShares;
     private List<LocalDate> purchaseDates;
+    private double gain;
 
     public Investment(String name, double initialSharesBought, double initialPurchasePrice, LocalDate initialPurchaseDate) {
         this.name = name;
@@ -18,6 +19,7 @@ public class Investment {
         this.purchasePrices.add(initialPurchasePrice);
         this.purchaseDates.add(initialPurchaseDate);
         this.purchaseShares.add(initialSharesBought);
+        this.gain = 0.0;
     }
 
 
@@ -46,20 +48,24 @@ public class Investment {
     }
 
     public void addPurchase(double price, LocalDate date, double quantity) {
+        if (price < 0 || quantity <= 0){
+            throw new IllegalArgumentException("Enter valid values");
+        }
         purchasePrices.add(price);
         purchaseDates.add(date);
         purchaseShares.add(quantity);
     }
 
     public void addSale(double price, LocalDate date, double quantity){
-        if (quantity * price > getInvestmentTotalValue()){
-            throw new IllegalArgumentException("You cannot sell more than is your overall investment value");
-        } else if (price <= 0 || quantity <= 0) {
+        if (quantity > getTotalNumberOfShares()){
+            throw new IllegalArgumentException("You cannot sell more shares than you own");
+        } else if (price < 0 || quantity <= 0) {
             throw new IllegalArgumentException("Enter valid values");
         }
         purchasePrices.add(-1 * price);
         purchaseDates.add(date);
         purchaseShares.add(-1 * quantity);
+        gain += (price * quantity) - (quantity * AveragePurchasePrice());
     }
 
     public int getNumberofBuys(){
@@ -200,7 +206,7 @@ public class Investment {
 
     public double getInvestmentLossGain(double actualPrice){
         double investmentPriceDelta = actualPrice - AveragePurchasePrice();
-        return getTotalNumberOfShares() * investmentPriceDelta;
+        return getTotalNumberOfShares() * investmentPriceDelta + gain;
     }
 
 }

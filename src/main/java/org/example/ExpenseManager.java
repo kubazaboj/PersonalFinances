@@ -52,7 +52,8 @@ public class ExpenseManager {
         return totalExpenses;
     }
 
-    public double getTotalExpensesForWeek(LocalDate startOfWeek, LocalDate endOfWeek) {
+    public double getTotalExpensesForWeek(LocalDate startOfWeek) {
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
         double totalExpenses = 0;
         for (Expense expense : expenses) {
             LocalDate expenseDate = expense.getDate();
