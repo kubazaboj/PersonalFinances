@@ -91,5 +91,5 @@ public class GoalManagerTest {
         assertEquals(2 * expenseAmount, totalExpensesForCategoryGoal, 0.01);
         assertEquals(expenseAmount, totalExpensesForSubcategoryGoal, 0.01);
     }
-    // Add more test methods for other functionality as needed
+    // Add more test methods for other functionality if needed
 }

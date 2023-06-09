@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 
 public class Goal {
     private String name;
@@ -29,11 +28,11 @@ public class Goal {
         this.targetYear = builder.targetYear;
     }
 
-    public String getName() {
+    public String getGoalName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void modifyName(String name) {
         this.name = name;
     }
 
@@ -41,7 +40,7 @@ public class Goal {
         return targetAmount;
     }
 
-    public void setTargetAmount(double targetAmount) {
+    public void modifyTargetAmount(double targetAmount) {
         this.targetAmount = targetAmount;
     }
 
@@ -89,7 +88,7 @@ public class Goal {
         return switch (goalType) {
             case DAILY -> targetDay;
             case WEEKLY -> targetWeek.getStartDate();
-            case MONTHLY -> LocalDate.of(1, 1, 1);
+            case MONTHLY -> LocalDate.of(targetMonth.getYear(), targetMonth.getMonthValue(), 1);
             case YEARLY -> LocalDate.of(targetYear.getValue(), 1, 1);
             default -> throw new IllegalArgumentException("Unsupported time frame: " + goalType);
         };
