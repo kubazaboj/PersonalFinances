@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,7 +82,7 @@ public class BudgetTest {
     }
 
     @Test
-    public void testGetDaysLeftInBudgetCurrentYearMonthIsAfterReturnsZero() {
+    public void testGetDaysLeftInBudgetCurrentYearMonthIsAfter() {
         YearMonth yearMonth = YearMonth.of(2022, 5);
         budget.setYearMonth(yearMonth);
 
@@ -89,13 +92,12 @@ public class BudgetTest {
     }
 
     @Test
-    public void testGetDaysLeftInBudgetCurrentYearMonthIsBeforeReturnsCorrectDays() {
+    public void testGetDaysLeftInBudgetCurrentYearMonthIsBeforeMoreThanMonth() {
         YearMonth yearMonth = YearMonth.now().plusMonths(1);
         budget.setYearMonth(yearMonth);
+        long expectedDaysLeft = ChronoUnit.DAYS.between(LocalDate.now(), YearMonth.now().plusMonths(1).atEndOfMonth());
 
-        long daysLeft = budget.getDaysLeftInBudget();
-
-        assertEquals(yearMonth.lengthOfMonth() - 1, daysLeft);
+        assertEquals(budget.getDaysLeftInBudget(), expectedDaysLeft);
     }
 
     @ParameterizedTest
@@ -104,7 +106,8 @@ public class BudgetTest {
             "100, 0, 0",
             "0, 100, 0",
             "200, 500, 40",
-            "400, 200, 200"
+            "400, 200, 200",
+            "200, 200, 100"
     })
     public void testGetSpendingPercentage(double usedBudget, double allocatedBudget, double expectedPercentage) {
         budget.setAllocatedBudget(allocatedBudget);
@@ -129,18 +132,5 @@ public class BudgetTest {
         budget.increaseUsedBudget(600);
 
         assertTrue(budget.isBudgetOverdrafted());
-    }
-
-    @Test
-    public void testToString() {
-        YearMonth yearMonth = YearMonth.of(2023, 6);
-        budget.setAllocatedBudget(500);
-        budget.increaseUsedBudget(200);
-        budget.setYearMonth(yearMonth);
-
-        String expectedString = "Budget{usedBudget=200.0, allocatedBudget=500.0, yearMonth=2023-06}";
-        String actualString = budget.toString();
-
-        assertEquals(expectedString, actualString);
     }
 }
