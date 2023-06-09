@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -42,9 +43,14 @@ public class UserLogin {
                 return true;
             }
         }
+        if (registrationWanted()){
             System.out.println("Registering new user");
             registerUser(typedUsername, typedPassword); //Username did not exist, register new user
-            return false;
+        }
+        else{
+            throw new RuntimeException("Registration not wanted");
+        }
+        return false;
     }
     String[] getCredentials(String username){
         try (BufferedReader reader = new BufferedReader(new FileReader(this.filepath))) {
@@ -73,4 +79,11 @@ public class UserLogin {
             System.out.println("Registration unsuccessful");
         }
     }
+    boolean registrationWanted() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Do you want to register? (Y/N): ");
+        String input = scanner.nextLine().trim().toLowerCase();
+        return input.equals("y") || input.equals("yes");
+    }
+
 }
