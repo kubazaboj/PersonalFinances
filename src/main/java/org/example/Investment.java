@@ -9,15 +9,14 @@ public class Investment {
     private  List<Double> purchasePrices;
     private List<Double> purchaseShares;
     private List<LocalDate> purchaseDates;
+    private double gain;
 
-    public Investment(String name, double initialSharesBought, double initialPurchasePrice, LocalDate initialPurchaseDate) {
+    public Investment(String name) {
         this.name = name;
         this.purchasePrices = new ArrayList<>();
         this.purchaseDates = new ArrayList<>();
         this.purchaseShares = new ArrayList<>();
-        this.purchasePrices.add(initialPurchasePrice);
-        this.purchaseDates.add(initialPurchaseDate);
-        this.purchaseShares.add(initialSharesBought);
+        this.gain = 0.0;
     }
 
 
@@ -45,18 +44,24 @@ public class Investment {
         return purchaseDates;
     }
 
+    public double getGain(){return gain;}
+
     public void addPurchase(double price, LocalDate date, double quantity) {
+        if (price < 0 || quantity <= 0){
+            throw new IllegalArgumentException("Enter valid values");
+        }
         purchasePrices.add(price);
         purchaseDates.add(date);
         purchaseShares.add(quantity);
     }
 
     public void addSale(double price, LocalDate date, double quantity){
-        if (quantity * price > getInvestmentTotalValue()){
-            throw new IllegalArgumentException("You cannot sell more than is your overall investment value");
-        } else if (price <= 0 || quantity <= 0) {
+        if (quantity > getTotalNumberOfShares()){
+            throw new IllegalArgumentException("You cannot sell more shares than you own");
+        } else if (price < 0 || quantity <= 0) {
             throw new IllegalArgumentException("Enter valid values");
         }
+        gain += ((price * quantity) - (quantity * AveragePurchasePrice()));
         purchasePrices.add(-1 * price);
         purchaseDates.add(date);
         purchaseShares.add(-1 * quantity);
@@ -88,11 +93,10 @@ public class Investment {
             return sumAllPrices;
         }
         for (int i = 0; i < purchasePrices.size(); i++) {
-            if (purchasePrices.get(i) < 0 || purchaseShares.get(i) < 0){
-                sumAllPrices -= purchasePrices.get(i) * purchaseShares.get(i);
-
-            }else {
+            if (purchasePrices.get(i) >= 0 && purchaseShares.get(i) > 0) {
                 sumAllPrices += purchasePrices.get(i) * purchaseShares.get(i);
+            }else{
+                sumAllPrices -= purchasePrices.get(i) * purchaseShares.get(i);
             }
         }
         return sumAllPrices / getTotalNumberOfShares();
@@ -200,7 +204,7 @@ public class Investment {
 
     public double getInvestmentLossGain(double actualPrice){
         double investmentPriceDelta = actualPrice - AveragePurchasePrice();
-        return getTotalNumberOfShares() * investmentPriceDelta;
+        return getTotalNumberOfShares() * investmentPriceDelta + gain;
     }
 
 }

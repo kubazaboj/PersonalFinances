@@ -28,6 +28,10 @@ public class GoalManager {
         return goal.getTargetAmount() >= getTotalExpensesForGoal(goal, expenseManager);
     }
 
+    public double goalMoneySavedAmount(Goal goal, ExpenseManager expenseManager){
+        return goal.getTargetAmount() - getTotalExpensesForGoal(goal, expenseManager);
+    }
+
     public double getTotalExpensesForGoal(Goal goal, ExpenseManager expenseManager) {
         double totalExpenses = 0.0;
         List<Expense> expenses = expenseManager.getAllExpenses();

@@ -4,12 +4,12 @@ import org.junit.jupiter.api.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mockito;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class UserLoginTest {
 
@@ -22,14 +22,14 @@ public class UserLoginTest {
     public void testLoginUserSuccessfulLogin() throws IOException {
         // Create a temporary file for testing
         File tempFile = createTempFileWithUserData();
-        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
+        BufferedReader mockBufferedReader = mock(BufferedReader.class);
         UserLogin login = new UserLogin(tempFile.getAbsolutePath(), username, password);
 
 
 
         try {
             // Mock the behavior of BufferedReader.readLine() to return the user's credentials
-            Mockito.when(mockBufferedReader.readLine()).thenReturn(userData);
+            when(mockBufferedReader.readLine()).thenReturn(userData);
 
             // Call the method under test, passing the mocked dependencies
             boolean result = login.loginUser();
@@ -47,12 +47,12 @@ public class UserLoginTest {
         // Create a temporary file for testing
         File tempFile = createTempFileWithUserData();
 
-        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
+        BufferedReader mockBufferedReader = mock(BufferedReader.class);
         UserLogin login = new UserLogin(tempFile.getAbsolutePath(), username, "wrongpassword");
 
         try {
             // Mock the behavior of BufferedReader.readLine() to return the user's credentials
-            Mockito.when(mockBufferedReader.readLine()).thenReturn(userData);
+            when(mockBufferedReader.readLine()).thenReturn(userData);
 
             // Call the method under test, passing the mocked dependencies
             boolean result = login.loginUser();
@@ -87,6 +87,12 @@ public class UserLoginTest {
         // Stub the getCredentials method to return null, simulating a new user
         Mockito.doReturn(null).when(userLogin).getCredentials(newUsername);
 
+        // Create a ByteArrayInputStream with the desired input
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("yes\n".getBytes());
+
+        // Redirect the standard input stream to the ByteArrayInputStream
+        System.setIn(inputStream);
+
         // Act
         boolean result = userLogin.loginUser();
 
@@ -94,6 +100,46 @@ public class UserLoginTest {
         assertTrue(result);
         Mockito.verify(userLogin).getCredentials(newUsername);
         Mockito.verify(userLogin).registerUser(newUsername, newPassword);
+
+        // Restore the original input stream
+        System.setIn(System.in);
+
+        // Delete the spied file after the test
+        java.nio.file.Path path = java.nio.file.Paths.get(filepath);
+        try {
+            java.nio.file.Files.deleteIfExists(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRegistrationNotWanted() {
+        // Arrange
+        String username = "john";
+        String password = "password";
+        String filepath = "filepath";
+
+        UserLogin userLogin = Mockito.spy(new UserLogin(filepath, username, password));
+
+        // Stub the getCredentials method to return null, simulating a new user
+        Mockito.doReturn(null).when(userLogin).getCredentials(username);
+
+        // Create a ByteArrayInputStream with the desired input
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("no\n".getBytes());
+
+        // Redirect the standard input stream to the ByteArrayInputStream
+        System.setIn(inputStream);
+
+        // Act
+        assertThrows(RuntimeException.class, userLogin::loginUser);
+
+        // Assert
+        Mockito.verify(userLogin).getCredentials(username);
+        Mockito.verify(userLogin, Mockito.never()).registerUser(Mockito.anyString(), Mockito.anyString());
+
+        // Restore the original input stream
+        System.setIn(System.in);
 
         // Delete the spied file after the test
         java.nio.file.Path path = java.nio.file.Paths.get(filepath);

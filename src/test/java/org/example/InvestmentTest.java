@@ -17,7 +17,8 @@ public class InvestmentTest {
     double initialSharesBought = 100;
     @BeforeEach
     public void beforeEach(){
-        investment = new Investment("Test Investment", initialSharesBought, initialPurchasePrice, LocalDate.now());
+        investment = new Investment("Test Investment");
+        investment.addPurchase(initialSharesBought, LocalDate.now(), initialPurchasePrice);
     }
 
     @Test
@@ -45,9 +46,9 @@ public class InvestmentTest {
     @Test
     public void testGetNumBuys() {
         investment.addPurchase(10.0, LocalDate.now().plusDays(1), 4);
-        investment.addPurchase(0.0, LocalDate.now().plusDays(2), 0.0);
+        investment.addPurchase(2.0, LocalDate.now().plusDays(2), 2.0);
 
-        assertEquals(2, investment.getNumberofBuys());
+        assertEquals(3, investment.getNumberofBuys());
     }
 
     @Test
@@ -154,37 +155,54 @@ public class InvestmentTest {
         investment.addSale(100, LocalDate.now(), 20);
         assertEquals(initialPurchasePrice * initialSharesBought, investment.getInvestmentTotalValue());
     }
-    //Equivalence test for Illegal argument exception
+    //Equivalence test for Illegal argument exception while selling
     @ParameterizedTest
     @CsvSource({
+            "-1, 0",
+            "-1, 1",
+            "-1, 100",
+            "-1, 1000",
+            "0, -1",
             "0, 0",
             "0, 1",
             "0, 100",
             "0, 1000",
-            "1, 0",
-            "1, 1",
-            "1, 100",
-            "1, 1000",
+            "10, -1",
             "10, 0",
             "10, 1",
             "10, 100",
             "10, 1000",
-            "100, 0",
-            "100, 1",
-            "100, 100",
-            "100, 1000",
-            "1000, 0",
-            "1000, 1",
-            "1000, 100",
-            "1000, 1000",
     })
     public void testAddSaleThrowsIllegalArgumentException(double price, double quantity) {
-        if (((quantity * price) > 0) && ((quantity * price) <= (initialPurchasePrice * initialSharesBought))){
+        if ((quantity <= initialSharesBought && quantity > 0 && price >= 0)){
             assertDoesNotThrow(() -> investment.addSale(price, LocalDate.now(), quantity));
 
         }
         else{
             assertThrows(IllegalArgumentException.class, () -> investment.addSale(price, LocalDate.now().plusDays(1), quantity));
+        }
+    }
+
+    //Equivalence test for Illegal argument exception while buying
+    @ParameterizedTest
+    @CsvSource({
+            "-1, -1",
+            "-1, 0",
+            "-1, 10",
+            "0, -1",
+            "0, 0",
+            "0, 10",
+            "10, -1",
+            "10, 0",
+            "10, 10",
+    })
+    public void testAddPurchaseThrowsIllegalArgumentException(double price, double quantity) {
+        if ((quantity > 0 && price >= 0)){
+            assertDoesNotThrow(() -> investment.addPurchase(price, LocalDate.now(), quantity));
+
+        }
+        else{
+            assertThrows(IllegalArgumentException.class, () -> investment.addPurchase(price, LocalDate.now().plusDays(1), quantity));
         }
     }
 
@@ -205,7 +223,7 @@ public class InvestmentTest {
         investment.addPurchase(purchasePrices[3], LocalDate.now().plusDays(4), 20);
         investment.addPurchase(purchasePrices[4], LocalDate.now().plusDays(5), 10);
 
-        double weightedAverage = calculateWeightedAverage(purchasePrices,
+        double weightedAverage = MyUtils.calculateWeightedAverage(purchasePrices,
                 new double[]{100, 50, 30, 20, 10, initialSharesBought});
 
         assertEquals(310, investment.getTotalNumberOfShares());
@@ -215,7 +233,7 @@ public class InvestmentTest {
     }
 
 
-    private double calculateWeightedAverage(double[] values, double[] weights) {
+    /*private double calculateWeightedAverage(double[] values, double[] weights) {
         if (values.length != weights.length) {
             throw new IllegalArgumentException("Values and weights arrays must have the same length.");
         }
@@ -233,5 +251,5 @@ public class InvestmentTest {
         }
 
         return sum / totalWeight;
-    }
+    }*/
 }

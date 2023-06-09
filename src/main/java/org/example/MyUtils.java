@@ -16,4 +16,25 @@ public class MyUtils {
         }
 
     }
+
+    public static double calculateWeightedAverage(double[] values, double[] weights) {
+        if (values.length != weights.length) {
+            throw new IllegalArgumentException("Values and weights arrays must have the same length.");
+        }
+
+        double sum = 0.0;
+        double totalWeight = 0.0;
+
+        for (int i = 0; i < values.length; i++) {
+            sum += values[i] * weights[i];
+            totalWeight += weights[i];
+        }
+
+        if (totalWeight == 0.0) {
+            throw new IllegalArgumentException("Total weight must be greater than zero.");
+        }
+
+        return sum / totalWeight;
+    }
+
 }
