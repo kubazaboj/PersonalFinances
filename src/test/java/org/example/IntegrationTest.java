@@ -15,8 +15,8 @@ public class IntegrationTest {
     @Test
     public void testLoginUserNewUserRegistration() {
         // Arrange
-        String newUsername = "jane";
-        String newPassword = "password123";
+        String newUsername = "john";
+        String newPassword = "password";
         String filepath = "filepath";
 
         UserLogin userLogin = Mockito.spy(new UserLogin(filepath, newUsername, newPassword));
@@ -31,10 +31,10 @@ public class IntegrationTest {
         System.setIn(inputStream);
 
         // Act
-        boolean result = userLogin.loginUser();
+        boolean loginResult = userLogin.loginUser();
 
         // Assert
-        assertTrue(result);
+        assertTrue(loginResult);
         Mockito.verify(userLogin).getCredentials(newUsername);
         Mockito.verify(userLogin).registerUser(newUsername, newPassword);
 
@@ -64,7 +64,8 @@ public class IntegrationTest {
         //Asserting if the sale was done and the user really has the right amount of stocks
         Assertions.assertEquals(1, investment.getNumberofSells());
         Assertions.assertEquals(7, investment.getTotalNumberOfShares());
-        Assertions.assertEquals(((actualPrice * 30) - (averagePrice * 30)), investment.getGain());
+        double incomeFromInvestment = ((actualPrice * 30) - (averagePrice * 30));
+        Assertions.assertEquals(incomeFromInvestment, investment.getGain());
 
         // Delete the spied file after the test
         java.nio.file.Path path = java.nio.file.Paths.get(filepath);
