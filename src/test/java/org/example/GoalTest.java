@@ -51,6 +51,7 @@ class GoalTest {
         assertEquals(targetWeek.getStartDate(), goal.getTimeFrameStart());
         assertEquals(targetWeek.getEndDate(), goal.getTimeFrameEnd());
         assertEquals(targetWeek.getEndDate(), LocalDate.now().plusDays(6));
+        assertEquals(goal.getWeekGoalDaysRemaining(), ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusDays(6)));
         assertEquals(goal.getGoalType(), GoalType.WEEKLY);
         assertEquals(goal.getTargetAmount(), 200.0);
         assertEquals(goal.getGoalName(), "Goal");
@@ -67,6 +68,7 @@ class GoalTest {
         assertEquals(category, goal.getGoalCategory());
         assertEquals(LocalDate.of(YearMonth.now().getYear(), YearMonth.now().getMonthValue(), 1), goal.getTimeFrameStart());
         assertEquals(targetMonth.atEndOfMonth(), goal.getTimeFrameEnd());
+        assertEquals(goal.getMonthGoalDaysRemaining(), ChronoUnit.DAYS.between(LocalDate.now(), targetMonth.atEndOfMonth()));
         assertEquals(goal.getGoalType(), GoalType.MONTHLY);
         assertEquals(goal.getTargetAmount(), 300.0);
         assertEquals(goal.getGoalName(), "Goal");
@@ -122,6 +124,7 @@ class GoalTest {
         assertEquals(subcategory, goal.getGoalSubcategory());
         assertEquals(targetWeek.getStartDate(), goal.getTimeFrameStart());
         assertEquals(targetWeek.getEndDate(), goal.getTimeFrameEnd());
+        assertEquals(goal.getWeekGoalDaysRemaining(), ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusDays(6)));
         assertEquals(goal.getGoalType(), GoalType.WEEKLY);
         assertEquals(goal.getTargetAmount(), 600.0);
         assertEquals(goal.getGoalName(), "Goal");
@@ -140,6 +143,7 @@ class GoalTest {
         assertEquals(subcategory, goal.getGoalSubcategory());
         assertEquals(LocalDate.of(YearMonth.now().getYear(), YearMonth.now().getMonthValue(), 1), goal.getTimeFrameStart());
         assertEquals(targetMonth.atEndOfMonth(), goal.getTimeFrameEnd());
+        assertEquals(goal.getMonthGoalDaysRemaining(), ChronoUnit.DAYS.between(LocalDate.now(), targetMonth.atEndOfMonth()));
         assertEquals(goal.getGoalType(), GoalType.MONTHLY);
         assertEquals(goal.getTargetAmount(), 700.0);
         assertEquals(goal.getGoalName(), "Goal");
@@ -158,6 +162,7 @@ class GoalTest {
         assertEquals(subcategory, goal.getGoalSubcategory());
         assertEquals(LocalDate.of(targetYear.getValue(), 1, 1), goal.getTimeFrameStart());
         assertEquals(LocalDate.of(targetYear.getValue(), 12, 31), goal.getTimeFrameEnd());
+        assertEquals(goal.getYearGoalDaysRemaining(), ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(targetYear.getValue(), 12, 31)));
         assertEquals(goal.getGoalType(), GoalType.YEARLY);
         assertEquals(goal.getTargetAmount(), 800.0);
         assertEquals(goal.getGoalName(), "Goal");
