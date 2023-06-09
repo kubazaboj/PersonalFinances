@@ -53,6 +53,9 @@ public class Investment {
     }
 
     public void addSale(double price, LocalDate date, double quantity){
+        if (quantity * price > getInvestmentTotalValue()){
+            throw new IllegalArgumentException("You cannot sell more than is your overall investment value");
+        }
         purchasePrices.add(-1 * price);
         purchaseDates.add(date);
         purchaseShares.add(-1 * quantity);
@@ -188,6 +191,10 @@ public class Investment {
             }
         }
         return maxPriceIndex;
+    }
+
+    public double getInvestmentTotalValue(){
+        return getTotalNumberOfShares() * AveragePurchasePrice();
     }
 
     public double getInvestmentLossGain(double actualPrice){

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InvestmentTest {
 
@@ -149,6 +150,20 @@ public class InvestmentTest {
         double SumSharesBought = Arrays.stream(allBoughtQuantities).sum();
 
         assertEquals((actualPrice - weightedAverage) * SumSharesBought, investment.getInvestmentLossGain(actualPrice), 0.001);
+    }
+
+    @Test
+    public void testInvestmentTotalValue(){
+        investment.addPurchase(20, LocalDate.now(), 100);
+        investment.addSale(100, LocalDate.now(), 20);
+        assertEquals(initialPurchasePrice * initialSharesBought, investment.getInvestmentTotalValue());
+    }
+
+    @Test
+    public void testAddSaleThrowsIllegalArgumentException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            investment.addSale(200, LocalDate.now().plusDays(1), 10);
+        });
     }
 
     @ParameterizedTest
