@@ -8,8 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InvestmentTest {
 
@@ -136,20 +135,17 @@ public class InvestmentTest {
         assertEquals(250.05, investment.getMostExpensiveSellAmount());
     }
 
+    //Equivalence test for positive/negative/0 gains of an investment
     @ParameterizedTest
     @CsvSource({
-            "12.5",
-            "10.0",
-            "5,"
+            "12.5, 250", // Positive outcome
+            "10.0, 0",    // Zero outcome
+            "5, -500"      // Negative outcome
     })
-    public void testGetInvestmentLossGain(double actualPrice) {
-        investment.addPurchase(15.0, LocalDate.now().plusDays(1), 50);
-        double[] allBoughtQuantities = {initialSharesBought, 50};
-        double weightedAverage = calculateWeightedAverage(new double[]{initialPurchasePrice, 15.0},
-                allBoughtQuantities);
-        double SumSharesBought = Arrays.stream(allBoughtQuantities).sum();
+    public void testGetInvestmentLossGain(double actualPrice, double expectedLossGain) {
 
-        assertEquals((actualPrice - weightedAverage) * SumSharesBought, investment.getInvestmentLossGain(actualPrice), 0.001);
+        // Assertion
+        assertEquals(expectedLossGain, investment.getInvestmentLossGain(actualPrice), 0.001);
     }
 
     @Test
@@ -158,12 +154,38 @@ public class InvestmentTest {
         investment.addSale(100, LocalDate.now(), 20);
         assertEquals(initialPurchasePrice * initialSharesBought, investment.getInvestmentTotalValue());
     }
+    //Equivalence test for Illegal argument exception
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0",
+            "0, 1",
+            "0, 100",
+            "0, 1000",
+            "1, 0",
+            "1, 1",
+            "1, 100",
+            "1, 1000",
+            "10, 0",
+            "10, 1",
+            "10, 100",
+            "10, 1000",
+            "100, 0",
+            "100, 1",
+            "100, 100",
+            "100, 1000",
+            "1000, 0",
+            "1000, 1",
+            "1000, 100",
+            "1000, 1000",
+    })
+    public void testAddSaleThrowsIllegalArgumentException(double price, double quantity) {
+        if (((quantity * price) > 0) && ((quantity * price) <= (initialPurchasePrice * initialSharesBought))){
+            assertDoesNotThrow(() -> investment.addSale(price, LocalDate.now(), quantity));
 
-    @Test
-    public void testAddSaleThrowsIllegalArgumentException(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            investment.addSale(200, LocalDate.now().plusDays(1), 10);
-        });
+        }
+        else{
+            assertThrows(IllegalArgumentException.class, () -> investment.addSale(price, LocalDate.now().plusDays(1), quantity));
+        }
     }
 
     @ParameterizedTest

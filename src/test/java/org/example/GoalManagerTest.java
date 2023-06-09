@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class GoalManagerTest {
@@ -91,5 +91,65 @@ public class GoalManagerTest {
         assertEquals(2 * expenseAmount, totalExpensesForCategoryGoal, 0.01);
         assertEquals(expenseAmount, totalExpensesForSubcategoryGoal, 0.01);
     }
-    // Add more test methods for other functionality if needed
+
+    //Equivalence test for meeting the goal method
+    @Test
+    public void testWasGoalMetExpensesLess() {
+        Category category = new Category("Food");
+        Subcategory subcategory = new Subcategory("Groceries", category);
+
+        Goal categoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .category(category)
+                .build();
+
+        Goal subcategoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .subcategory(subcategory)
+                .build();
+        ExpenseManager expenseManager = new ExpenseManager(new Budget(YearMonth.now()));
+        expenseManager.addExpense(new Expense("Kaufland", 200, LocalDate.now(), subcategory));
+        assertTrue(goalManager.wasGoalMet(categoryGoal, expenseManager));
+        assertTrue(goalManager.wasGoalMet(subcategoryGoal, expenseManager));
+    }
+
+    @Test
+    public void testWasGoalMetExpensesEqual() {
+        Category category = new Category("Food");
+        Subcategory subcategory = new Subcategory("Groceries", category);
+
+        Goal categoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .category(category)
+                .build();
+
+        Goal subcategoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .subcategory(subcategory)
+                .build();
+        ExpenseManager expenseManager = new ExpenseManager(new Budget(YearMonth.now()));
+        expenseManager.addExpense(new Expense("Kaufland", 300, LocalDate.now(), subcategory));
+        assertTrue(goalManager.wasGoalMet(categoryGoal, expenseManager));
+        assertTrue(goalManager.wasGoalMet(subcategoryGoal, expenseManager));
+    }
+
+    @Test
+    public void testWasGoalMetExpensesMore() {
+        Category category = new Category("Food");
+        Subcategory subcategory = new Subcategory("Groceries", category);
+
+        Goal categoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .category(category)
+                .build();
+
+        Goal subcategoryGoal = new Goal.Builder("Food saving", 300, GoalType.MONTHLY)
+                .targetMonth(YearMonth.of(2023,6))
+                .subcategory(subcategory)
+                .build();
+        ExpenseManager expenseManager = new ExpenseManager(new Budget(YearMonth.now()));
+        expenseManager.addExpense(new Expense("Kaufland", 400, LocalDate.now(), subcategory));
+        assertFalse(goalManager.wasGoalMet(categoryGoal, expenseManager));
+        assertFalse(goalManager.wasGoalMet(subcategoryGoal, expenseManager));
+    }
 }

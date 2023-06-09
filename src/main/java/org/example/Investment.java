@@ -8,7 +8,6 @@ public class Investment {
     private String name;
     private  List<Double> purchasePrices;
     private List<Double> purchaseShares;
-
     private List<LocalDate> purchaseDates;
 
     public Investment(String name, double initialSharesBought, double initialPurchasePrice, LocalDate initialPurchaseDate) {
@@ -55,6 +54,8 @@ public class Investment {
     public void addSale(double price, LocalDate date, double quantity){
         if (quantity * price > getInvestmentTotalValue()){
             throw new IllegalArgumentException("You cannot sell more than is your overall investment value");
+        } else if (price <= 0 || quantity <= 0) {
+            throw new IllegalArgumentException("Enter valid values");
         }
         purchasePrices.add(-1 * price);
         purchaseDates.add(date);
