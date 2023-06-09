@@ -1,66 +1,69 @@
 package org.example;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class SubcategoryManagerTest {
+
+    @Mock
+    private ExpenseManager expenseManager;
+
+    public SubcategoryManagerTest() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     public void testAddSubcategory() {
         SubcategoryManager subcategoryManager = new SubcategoryManager();
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
+        Category category = mock(Category.class);
+        Subcategory subcategory = mock(Subcategory.class);
+
+        when(subcategory.getCategory()).thenReturn(category);
 
         subcategoryManager.addSubcategory(subcategory);
 
-        assertTrue(subcategoryManager.getAllSubcategories().contains(subcategory));
+        assertEquals(1, subcategoryManager.getSubcategories().size());
+        verify(category).addSubcategory(subcategory);
     }
 
     @Test
     public void testRemoveSubcategory() {
         SubcategoryManager subcategoryManager = new SubcategoryManager();
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
+        Category category = mock(Category.class);
+        Subcategory subcategory = mock(Subcategory.class);
+        Expense expense = mock(Expense.class);
+
+        when(subcategory.getCategory()).thenReturn(category);
+        when(subcategory.getExpenses()).thenReturn(List.of(expense));
 
         subcategoryManager.addSubcategory(subcategory);
-        subcategoryManager.removeSubcategory(subcategory, new ExpenseManager(new Budget(10, YearMonth.now())));
 
-        assertFalse(subcategoryManager.getAllSubcategories().contains(subcategory));
+        subcategoryManager.removeSubcategory(subcategory, expenseManager);
+
+        assertEquals(0, subcategoryManager.getSubcategories().size());
+        verify(category).removeSubcategory(subcategory);
+        verify(expenseManager).removeExpense(expense);
     }
 
     @Test
     public void testGetCategory() {
         SubcategoryManager subcategoryManager = new SubcategoryManager();
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
+        Category category = mock(Category.class);
+        Subcategory subcategory = mock(Subcategory.class);
+
+        when(subcategory.getCategory()).thenReturn(category);
 
         subcategoryManager.addSubcategory(subcategory);
 
-        assertEquals(category, subcategoryManager.getCategory(subcategory));
+        Category result = subcategoryManager.getCategory(subcategory);
+
+        assertEquals(category, result);
     }
-
-    @Test
-    public void testGetAllExpenses() {
-        SubcategoryManager subcategoryManager = new SubcategoryManager();
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
-        Expense expense1 = new Expense("Burger", 5.99, LocalDate.now());
-        Expense expense2 = new Expense("Pizza", 8.99, LocalDate.now());
-
-        subcategory.addExpense(expense1);
-        subcategory.addExpense(expense2);
-
-        List<Expense> allExpenses = subcategoryManager.getAllSubcategoryExpenses(subcategory);
-
-        assertTrue(allExpenses.contains(expense1));
-        assertTrue(allExpenses.contains(expense2));
-    }
-
-    // Add more test methods for other functionality of the SubcategoryManager class
-
+    // Add more tests as needed
 }

@@ -12,13 +12,16 @@ public class Expense {
     private LocalDate date;
     private Subcategory subcategory;
 
-    private boolean isPositive; //True if expense,
-
-    public Expense(String description, double amount, LocalDate date) {
-        this.description = description;
+    public Expense(String description, double amount, LocalDate date, Subcategory subcategory) {
+        if (amount <= 0){
+            throw new IllegalArgumentException("Amount must be grater than 0");
+        }
         this.amount = amount;
+        this.description = description;
         this.date = date;
-    }
+        this.subcategory = subcategory;
+
+        }
 
     public String getDescription() {
         return description;
@@ -36,9 +39,7 @@ public class Expense {
         return subcategory;
     }
 
-    public void setSubcategory(Subcategory subcategory) {
-        this.subcategory = subcategory;
-    }
+    public void setSubcategory(Subcategory subcategory){this.subcategory = subcategory;}
 
     public void removeSubcategory(){
         this.subcategory = null;

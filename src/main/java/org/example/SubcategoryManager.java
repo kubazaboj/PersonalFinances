@@ -10,8 +10,14 @@ public class SubcategoryManager {
         this.subcategories = new ArrayList<>();
     }
 
+    public List<Subcategory> getSubcategories() {
+        return subcategories;
+    }
+
     public void addSubcategory(Subcategory subcategory) {
         subcategories.add(subcategory);
+        Category category = subcategory.getCategory();
+        category.addSubcategory(subcategory);
     }
 
     public void removeSubcategory(Subcategory subcategory, ExpenseManager expenseManager) {
@@ -19,6 +25,8 @@ public class SubcategoryManager {
         for (Expense expense : getAllSubcategoryExpenses(subcategory)) {
             expenseManager.removeExpense(expense);
             }
+        Category category = subcategory.getCategory();
+        category.removeSubcategory(subcategory);
         subcategories.remove(subcategory);
         }
 
@@ -44,7 +52,7 @@ public class SubcategoryManager {
     private void collectExpenses(Subcategory subcategory, List<Expense> allExpenses) {
         allExpenses.addAll(subcategory.getExpenses());
 
-        for (Subcategory sub : subcategory.getSubcategories()) {
+        for (Subcategory sub : getSubcategories()) {
             collectExpenses(sub, allExpenses);
         }
     }
@@ -58,7 +66,7 @@ public class SubcategoryManager {
     private void collectIncomes(Subcategory subcategory, List<Expense> allExpenses) {
         allExpenses.addAll(subcategory.getExpenses());
 
-        for (Subcategory sub : subcategory.getSubcategories()) {
+        for (Subcategory sub : getSubcategories()) {
             collectExpenses(sub, allExpenses);
         }
     }

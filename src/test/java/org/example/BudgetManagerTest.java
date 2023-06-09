@@ -1,58 +1,113 @@
 package org.example;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.YearMonth;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class BudgetManagerTest {
 
-    BudgetManager budgetManager = new BudgetManager();
-    YearMonth month1 = YearMonth.of(2023, 6);
-    Budget budget = new Budget(100.0, month1);
+    private BudgetManager budgetManager;
 
-
+    @BeforeEach
+    public void beforeEach() {
+        budgetManager = new BudgetManager();
+    }
 
     @Test
     public void testAddBudget() {
-
+        Budget budget = mock(Budget.class);
         budgetManager.addBudget(budget);
-        List<Budget> allBudgets = budgetManager.getAllBudgets();
 
-        Assertions.assertEquals(1, allBudgets.size());
-        Assertions.assertTrue(allBudgets.contains(budget));
+        List<Budget> budgets = budgetManager.getAllBudgets();
+
+        assertEquals(1, budgets.size());
+        assertEquals(budget, budgets.get(0));
     }
 
     @Test
     public void testRemoveBudget() {
-
+        Budget budget = mock(Budget.class);
         budgetManager.addBudget(budget);
-        budgetManager.removeBudget(budget);
-        List<Budget> allBudgets = budgetManager.getAllBudgets();
+        assertEquals(1, budgetManager.getAllBudgets().size());
 
-        Assertions.assertEquals(0, allBudgets.size());
-        Assertions.assertFalse(allBudgets.contains(budget));
+        budgetManager.removeBudget(budget);
+        assertEquals(0, budgetManager.getAllBudgets().size());
+    }
+
+    @Test
+    public void testGetRemainingBudget() {
+        Budget budget = mock(Budget.class);
+        when(budget.getAllocatedBudget()).thenReturn(1000.0);
+        when(budget.getUsedBudget()).thenReturn(500.0);
+
+        double remainingBudget = budgetManager.getRemainingBudget(budget);
+
+        assertEquals(500.0, remainingBudget);
     }
 
     @Test
     public void testGetBudgetByYearMonth() {
-
-
-        YearMonth month2 = YearMonth.of(2022, 6);
-        BudgetManager budgetManager = new BudgetManager();
-        Budget budget2 = new Budget(200.0, month2);
+        YearMonth yearMonth = YearMonth.of(2023, 7);
+        Budget budget = mock(Budget.class);
+        when(budget.getYearMonth()).thenReturn(yearMonth);
 
         budgetManager.addBudget(budget);
+
+        Budget retrievedBudget = budgetManager.getBudgetByYearMonth(yearMonth);
+
+        assertEquals(budget, retrievedBudget);
+    }
+
+    @Test
+    public void testIsBudgetOverdraftedForMonth() {
+        YearMonth yearMonth = YearMonth.of(2023, 7);
+        Budget budget = mock(Budget.class);
+        when(budget.getYearMonth()).thenReturn(yearMonth);
+        when(budget.getUsedBudget()).thenReturn(1200.0);
+        when(budget.getAllocatedBudget()).thenReturn(1000.0);
+
+        budgetManager.addBudget(budget);
+
+        assertTrue(budgetManager.isBudgetOverdraftedForMonth(yearMonth));
+    }
+
+    @Test
+    public void testGetOverdraftedMonthsForYear() {
+        int year = 2023;
+
+        YearMonth overdraftedYearMonth1 = YearMonth.of(year, 7);
+        YearMonth overdraftedYearMonth2 = YearMonth.of(year, 9);
+
+        Budget budget1 = mock(Budget.class);
+        when(budget1.getYearMonth()).thenReturn(overdraftedYearMonth1);
+        when(budget1.getUsedBudget()).thenReturn(1200.0);
+        when(budget1.getAllocatedBudget()).thenReturn(1000.0);
+
+        Budget budget2 = mock(Budget.class);
+        when(budget2.getYearMonth()).thenReturn(overdraftedYearMonth2);
+        when(budget2.getUsedBudget()).thenReturn(1500.0);
+        when(budget2.getAllocatedBudget()).thenReturn(1000.0);
+
+        Budget budget3 = mock(Budget.class);
+        when(budget3.getYearMonth()).thenReturn(YearMonth.of(year, 8));
+        when(budget3.getUsedBudget()).thenReturn(800.0);
+        when(budget3.getAllocatedBudget()).thenReturn(1000.0);
+
+        budgetManager.addBudget(budget1);
         budgetManager.addBudget(budget2);
+        budgetManager.addBudget(budget3);
 
-        Budget foundBudget = budgetManager.getBudgetByYearMonth(month1);
-        Assertions.assertEquals(budget, foundBudget);
+        List<YearMonth> overdraftedMonths = budgetManager.getOverdraftedMonthsForYear(year);
 
-        foundBudget = budgetManager.getBudgetByYearMonth(month2);
-        Assertions.assertEquals(budget2, foundBudget);
-
-        foundBudget = budgetManager.getBudgetByYearMonth(YearMonth.of(2022, 7));
-        Assertions.assertNull(foundBudget);
+        assertEquals(2, overdraftedMonths.size());
+        assertTrue(overdraftedMonths.contains(overdraftedYearMonth1));
+        assertTrue(overdraftedMonths.contains(overdraftedYearMonth2));
     }
 }

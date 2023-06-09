@@ -11,7 +11,7 @@ public class Main {
         String username = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
-        userLogin login = new userLogin(filepath, username, password);
+        UserLogin login = new UserLogin(filepath, username, password);
         if (!login.loginUser()){
             System.out.println("Login denied!");
         }else{

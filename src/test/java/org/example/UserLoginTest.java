@@ -1,88 +1,104 @@
 package org.example;
+
 import org.junit.jupiter.api.*;
 import org.mindrot.jbcrypt.BCrypt;
+import org.mockito.Mockito;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserLoginTest {
-    private static final String testFilepath = "src/main/resources/test-credentials.txt";
-    private static final String testUsername = "testUser";
-    private static final String testPassword = "testPassword";
+public class UserLoginTest {
 
-    private userLogin login;
 
-    @BeforeEach
-    void beforeEach() {
-        MyUtils.createFileIfNotExists(testFilepath);
-        login = new userLogin(testFilepath, testUsername, testPassword);
+    String username = "john";
+    String password = "newpassword";
+    String userData = username + ":" + BCrypt.hashpw(password, BCrypt.gensalt());
 
-    }
+    @Test
+    public void testLoginUserSuccessfulLogin() throws IOException {
+        // Create a temporary file for testing
+        File tempFile = createTempFileWithUserData();
+        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
+        UserLogin login = new UserLogin(tempFile.getAbsolutePath(), username, password);
 
-    @AfterEach
-    void afterEach() {
-        // Clean up test file after each test
-        File file = new File(testFilepath);
-        if (file.exists()) {
-            file.delete();
+
+
+        try {
+            // Mock the behavior of BufferedReader.readLine() to return the user's credentials
+            Mockito.when(mockBufferedReader.readLine()).thenReturn(userData);
+
+            // Call the method under test, passing the mocked dependencies
+            boolean result = login.loginUser();
+
+            // Assert the result
+            assertTrue(result);
+        } finally {
+            // Delete the temporary file after the test
+            tempFile.delete();
         }
     }
 
     @Test
-    void loginUser_ValidCredentials_LoginSuccessful() {
-        // Arrange
-        registerTestUser();
+    public void testLoginUserFailedLogin() throws IOException {
+        // Create a temporary file for testing
+        File tempFile = createTempFileWithUserData();
 
-        // Act
-        boolean result = login.loginUser();
+        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
+        UserLogin login = new UserLogin(tempFile.getAbsolutePath(), username, "wrongpassword");
 
-        // Assert
-        assertTrue(result, "Login should be successful");
+        try {
+            // Mock the behavior of BufferedReader.readLine() to return the user's credentials
+            Mockito.when(mockBufferedReader.readLine()).thenReturn(userData);
+
+            // Call the method under test, passing the mocked dependencies
+            boolean result = login.loginUser();
+
+            // Assert the result
+            assertFalse(result);
+        } finally {
+            // Delete the temporary file after the test
+            tempFile.delete();
+        }
+    }
+
+    private File createTempFileWithUserData() throws IOException {
+        File tempFile = File.createTempFile("test", ".txt");
+
+        try (FileWriter writer = new FileWriter(tempFile)) {
+            writer.write(userData);
+        }
+
+        return tempFile;
     }
 
     @Test
-    void loginUser_NewUser_RegistrationSuccessful() {
+    public void testLoginUserNewUserRegistration() {
         // Arrange
+        String newUsername = "jane";
+        String newPassword = "password123";
+        String filepath = "filepath";
+
+        UserLogin userLogin = Mockito.spy(new UserLogin(filepath, newUsername, newPassword));
+
+        // Stub the getCredentials method to return null, simulating a new user
+        Mockito.doReturn(null).when(userLogin).getCredentials(newUsername);
 
         // Act
-        boolean result = login.loginUser();
+        boolean result = userLogin.loginUser();
 
         // Assert
-        assertTrue(result, "Login should be successful for newly registered user");
-    }
+        assertTrue(result);
+        Mockito.verify(userLogin).getCredentials(newUsername);
+        Mockito.verify(userLogin).registerUser(newUsername, newPassword);
 
-    @Test
-    void loginUser_ExistingUser_RegistrationSkipped() {
-        // Arrange
-        registerTestUser();
-
-        // Act
-        boolean result = login.loginUser();
-
-        // Assert
-        assertTrue(result, "Login should be successful for existing user without registration");
-    }
-
-
-    @Test
-    void loginUser_InvalidCredentials_LoginFailed() {
-        // Arrange
-        registerTestUser();
-        login = new userLogin(testFilepath, testUsername, "wrongPassword");
-
-        // Act
-        boolean result = login.loginUser();
-
-        // Assert
-        assertFalse(result, "Login should fail with wrong password");
-    }
-
-    private void registerTestUser() {
-        MyUtils.createFileIfNotExists(testFilepath);
-        String hashedPassword = BCrypt.hashpw(testPassword, BCrypt.gensalt());
-        try (FileWriter writer = new FileWriter(testFilepath)) {
-            writer.write(testUsername + ":" + hashedPassword);
+        // Delete the spied file after the test
+        java.nio.file.Path path = java.nio.file.Paths.get(filepath);
+        try {
+            java.nio.file.Files.deleteIfExists(path);
         } catch (IOException e) {
             e.printStackTrace();
         }

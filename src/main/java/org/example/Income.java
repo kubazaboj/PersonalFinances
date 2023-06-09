@@ -8,10 +8,14 @@ public class Income {
     private LocalDate date;
     private Subcategory subcategory;
 
-    public Income(String description, double amount, LocalDate date) {
-        this.description = description;
+    public Income(String description, double amount, LocalDate date, Subcategory subcategory) {
+        if (amount <= 0){
+            throw new IllegalArgumentException("Amount must be grater than 0");
+        }
         this.amount = amount;
+        this.description = description;
         this.date = date;
+        this.subcategory = subcategory;
     }
 
     public String getDescription() {
@@ -30,9 +34,7 @@ public class Income {
         return subcategory;
     }
 
-    public void setSubcategory(Subcategory subcategory) {
-        this.subcategory = subcategory;
-    }
+    public void setSubcategory(Subcategory subcategory){this.subcategory = subcategory;}
 
     public void removeSubcategory() {
         this.subcategory = null;

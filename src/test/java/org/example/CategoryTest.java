@@ -1,37 +1,39 @@
 package org.example;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CategoryTest {
+class CategoryTest {
+    static Category category;
+    Subcategory subcategory;
 
-    @Test
-    public void testGetName() {
-        Category category = new Category("Food");
-        assertEquals("Food", category.getName());
+    @BeforeAll
+    public static void beforeAll(){
+        category = new Category("Test Category");
+    }
+
+    @BeforeEach
+    public void beforeEach(){
+        subcategory = Mockito.mock(Subcategory.class);
+
     }
 
     @Test
-    public void testAddSubcategory() {
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
-
+    void testAddSubcategory() {
         category.addSubcategory(subcategory);
 
         assertTrue(category.getSubcategories().contains(subcategory));
     }
 
     @Test
-    public void testRemoveSubcategory() {
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
-
+    void testRemoveSubcategory() {
         category.addSubcategory(subcategory);
         category.removeSubcategory(subcategory);
 
         assertFalse(category.getSubcategories().contains(subcategory));
     }
-
-    // Add more test methods for other functionality of the Category class
-
 }

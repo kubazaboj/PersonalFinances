@@ -1,79 +1,76 @@
 package org.example;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExpenseTest {
-    static Expense expense;
 
+class ExpenseTest {
 
-    @BeforeAll
-    public static void beforeAll(){
-        expense = new Expense("Burger", 5.99, LocalDate.now());
+    Expense expense;
+    Subcategory subcategory;
+
+    @BeforeEach
+    void beforeEach(){
+        subcategory = Mockito.mock(Subcategory.class);
+        expense = new Expense("Test Expense", 100.0, LocalDate.now(), subcategory);
     }
 
     @Test
-    public void testGetDescription() {
+    void testGetDescription() {
+        String description = "Test Expense";
 
-        assertEquals("Burger", expense.getDescription());
+        String actualDescription = expense.getDescription();
+
+        assertEquals(description, actualDescription);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-100",
+            "0",
+            "100"
+    })
+    void amountLegalValueAndGetCorrectly(double amount) {
+        if (amount <= 0) {
+            assertThrows(IllegalArgumentException.class, () -> {
+                Expense newExpense = new Expense("Test Expense", amount, LocalDate.now(), null);
+            });
+        } else {
+            Expense newExpense = new Expense("Test Expense", amount, LocalDate.now(), null);
+            assertEquals(amount, newExpense.getAmount());
+        }
     }
 
     @Test
-    public void testGetAmount() {
-
-        assertEquals(5.99, expense.getAmount(), 0.0);
+    void testGetDate() {
+        assertEquals(LocalDate.now(), expense.getDate());
     }
 
     @Test
-    public void testGetDate() {
-        LocalDate date = LocalDate.now();
-
-        assertEquals(date, expense.getDate());
+    void testGetSubcategory() {
+        assertEquals(subcategory, expense.getSubcategory());
     }
 
     @Test
-    public void testAddSubcategory() {
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
+    public void testSetSubcategory() {
+        Subcategory newSubcategory = Mockito.mock(Subcategory.class);
 
-        expense.setSubcategory(subcategory);
+        expense.setSubcategory(newSubcategory);
 
-        assertNotNull(expense.getSubcategory());
+        assertEquals(newSubcategory, expense.getSubcategory());
     }
 
     @Test
-    public void testRemoveSubcategory() {
-        Category category = new Category("Food");
-        Subcategory subcategory = new Subcategory("Fast Food", category);
+    void testRemoveSubcategory() {
 
-        expense.setSubcategory(subcategory);
         expense.removeSubcategory();
 
         assertNull(expense.getSubcategory());
     }
-
-    /*@Test
-    public void testExpenseDescriptionIsString() {
-        // Arrange
-        double amount = 5.99;
-        LocalDate date = LocalDate.now();
-        String invalidDescription = "12345";
-
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Expense(invalidDescription, amount, date);
-        });
-
-        // Assert
-        String expectedErrorMessage = "Description must be a string";
-        String actualErrorMessage = exception.getMessage();
-        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
-    }*/
-
-    // Add more test methods for other functionality of the Expense class
-
 }

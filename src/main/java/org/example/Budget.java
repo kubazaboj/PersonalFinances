@@ -5,18 +5,18 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 
 public class Budget {
-    private double actualBudget;
+    private double usedBudget;
     private double allocatedBudget;
     private YearMonth yearMonth;
 
-    public Budget(double allocatedBudget, YearMonth yearMonth) {
-        this.actualBudget = 0;
-        this.allocatedBudget = allocatedBudget;
+    public Budget(YearMonth yearMonth) {
+        this.usedBudget = 0;
+        this.allocatedBudget = 0;
         this.yearMonth = yearMonth;
     }
 
-    public double getActualBudget() {
-        return actualBudget;
+    public double getUsedBudget() {
+        return usedBudget;
     }
 
     public double getAllocatedBudget() {
@@ -27,8 +27,8 @@ public class Budget {
         this.allocatedBudget = allocatedBudget;
     }
 
-    public void increaseActualBudget(double amount) {
-        this.actualBudget += amount;
+    public void increaseUsedBudget(double amount) {
+        this.usedBudget += amount;
     }
 
     public void decreaseAllocatedBudget(double amount) {
@@ -39,8 +39,8 @@ public class Budget {
         this.allocatedBudget += amount;
     }
 
-    public void decreaseActualBudget(double amount) {
-        this.actualBudget -= amount;
+    public void decreaseUsedBudget(double amount) {
+        this.usedBudget -= amount;
     }
 
     public YearMonth getYearMonth() {
@@ -65,18 +65,18 @@ public class Budget {
         if (allocatedBudget == 0) {
             return 0;
         } else {
-            return (actualBudget / allocatedBudget) * 100;
+            return (usedBudget / allocatedBudget) * 100;
         }
     }
 
     public boolean isBudgetOverdrafted() {
-        return actualBudget > allocatedBudget;
+        return usedBudget > allocatedBudget;
     }
 
     @Override
     public String toString() {
         return "Budget{" +
-                "setBudget=" + actualBudget +
+                "setBudget=" + usedBudget +
                 ", allocatedBudget=" + allocatedBudget +
                 ", yearMonth=" + yearMonth +
                 '}';

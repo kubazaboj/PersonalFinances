@@ -6,6 +6,7 @@ import java.util.List;
 public class Category {
     private String name;
     private List<Subcategory> subcategories;
+    double goal;
 
     public Category(String name) {
         this.name = name;
